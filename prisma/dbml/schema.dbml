@@ -1,0 +1,110 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id String [pk]
+  username String [not null]
+  full_name String
+  email String [unique, not null]
+  password String [not null]
+  role Role [not null, default: 'FREELANCER']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  Projects Projects [not null]
+  Jobs Jobs [not null]
+}
+
+Table ContactMessages {
+  id Int [pk, increment]
+  first_name String [not null]
+  last_name String
+  email String [not null]
+  message String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deletedAt DateTime
+}
+
+Table Projects {
+  id Int [pk, increment]
+  title String [not null]
+  description String
+  video String [not null]
+  image String
+  link String
+  highlight Boolean [not null, default: false]
+  highlight_until DateTime
+  created_by String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deletedAt DateTime
+  user_id String [not null]
+  user User [not null]
+}
+
+Table JobTypes {
+  id Int [pk, increment]
+  type String [not null]
+  Jobs Jobs [not null]
+}
+
+Table Jobs {
+  id Int [pk, increment]
+  title String [not null]
+  description String [not null]
+  deadline DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deletedAt DateTime
+  user_id String [not null]
+  user User [not null]
+  type_id Int [not null]
+  type JobTypes [not null]
+  Applications Applications [not null]
+}
+
+Table Applications {
+  id Int [pk, increment]
+  name String [not null]
+  email String [not null]
+  phone_number String [not null]
+  city String [not null]
+  cover_letter String [not null]
+  linkedin String [not null]
+  instagram String [not null]
+  type_creator TypeCreator [not null, default: 'Hobby']
+  AR_publications_count Int [not null, default: 0]
+  AR_monetize Boolean [not null, default: false]
+  AR_publication_platform String [not null]
+  AR_tools String [not null]
+  AR_type String [not null]
+  AR_asset Boolean [not null, default: false]
+  AR_3D_asset Int [not null, default: 0]
+  AR_Skills String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deletedAt DateTime
+  jod_id Int [not null]
+  job Jobs [not null]
+}
+
+Enum Role {
+  ADMIN
+  CLIENT
+  FREELANCER
+}
+
+Enum TypeCreator {
+  Professional
+  SideHustle
+  Hobby
+}
+
+Ref: Projects.user_id > User.id
+
+Ref: Jobs.user_id > User.id
+
+Ref: Jobs.type_id > JobTypes.id
+
+Ref: Applications.jod_id > Jobs.id
