@@ -43,6 +43,7 @@ model Users {
   username        String
   full_name       String?
   profile_picture String?
+  phone_number    String?
   email           String  @unique
   password        String
   role            Role    @default(USER)
@@ -55,18 +56,18 @@ model Users {
 }
 
 model Tailors {
-  id           String  @id @default(uuid())
+  id           String   @id @default(uuid())
   name         String
-  description  String? @db.Text
+  description  String?  @db.Text
   image        String?
   address      String?
   longitude    String?
   latitude     String?
   opening_time String?
   closing_time String?
-  open_days    String?
+  open_days    String[] @default([])
 
-  user_id String
+  user_id String @unique
   Users   Users  @relation(fields: [user_id], references: [id])
 
   createdAt DateTime  @default(now())
@@ -94,10 +95,12 @@ model Orders {
 }
 
 model Clothes {
-  id     String       @id @default(uuid())
-  name   String
-  price  Float?
-  status ClotheStatus @default(AWAITING)
+  id          String       @id @default(uuid())
+  name        String
+  price       Float?
+  status      ClotheStatus @default(AWAITING)
+  description String?      @db.Text
+  quantity    Int          @default(1)
 
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @default(now()) @updatedAt

@@ -5,6 +5,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 
 import { PrismaService } from './infra/database/prisma/prisma.service';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { PrismaService } from './infra/database/prisma/prisma.service';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: process.env.JWT_EXPIRES_IN },
     }),
+    AuthModule,
   ],
   controllers: [],
   providers: [

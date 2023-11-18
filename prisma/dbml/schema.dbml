@@ -7,6 +7,7 @@ Table Users {
   username String [not null]
   full_name String
   profile_picture String
+  phone_number String
   email String [unique, not null]
   password String [not null]
   role Role [not null, default: 'USER']
@@ -27,8 +28,8 @@ Table Tailors {
   latitude String
   opening_time String
   closing_time String
-  open_days String
-  user_id String [not null]
+  open_days String[] [not null]
+  user_id String [unique, not null]
   Users Users [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
@@ -57,6 +58,8 @@ Table Clothes {
   name String [not null]
   price Float
   status ClotheStatus [not null, default: 'AWAITING']
+  description String
+  quantity Int [not null, default: 1]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
   OrderItems OrderItems [not null]
