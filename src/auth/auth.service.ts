@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 
 import * as bcrypt from 'bcrypt';
 
 import { PrismaService } from '../infra/database/prisma/prisma.service';
-import { type UpdateAuthDto, type CreateAuthDto } from './dto/index';
+import { type LoginAuthDto, type CreateAuthDto } from './dto/index';
 
 const salt = bcrypt.genSaltSync(12);
 
@@ -12,6 +13,7 @@ const salt = bcrypt.genSaltSync(12);
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
+    private jwt: JwtService,
     private config: ConfigService,
   ) {}
 
@@ -26,37 +28,44 @@ export class AuthService {
     return user;
   }
 
-  findAll() {
-    const users = this.prisma.users.findMany();
-
-    return users;
-  }
-
-  findOne(id: string) {
-    const user = this.prisma.users.findUnique({
-      where: { id: id },
+  async login(data: LoginAuthDto) {
+    const user = await this.prisma.users.findUnique({
+      where: { email: data.email },
     });
 
-    return user;
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const isPasswordMatch = await bcrypt.compare(data.password, user.password);
+
+    if (!isPasswordMatch) {
+      throw new Error('Password not match');
+    }
+
+    const token = await this.generateToken(user.id, user.email, user.role);
+
+    return token;
   }
 
-  update(id: string, updateAuthDto: UpdateAuthDto) {
-    const user = this.prisma.users.update({
-      where: { id: id },
-      data: {
-        ...updateAuthDto,
-        password: bcrypt.hashSync(updateAuthDto.password, salt),
-      },
+  async generateToken(
+    id: string,
+    email: string,
+    role: string,
+  ): Promise<{ token: string }> {
+    const payload = {
+      id,
+      email,
+      role,
+    };
+
+    const token = await this.jwt.signAsync(payload, {
+      secret: this.config.get('JWT_SECRET'),
+      expiresIn: this.config.get('JWT_EXPIRES_IN'),
     });
 
-    return user;
-  }
-
-  remove(id: string) {
-    const user = this.prisma.users.delete({
-      where: { id: id },
-    });
-
-    return user;
+    return {
+      token,
+    };
   }
 }

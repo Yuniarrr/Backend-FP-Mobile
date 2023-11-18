@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 
 import { PrismaService } from './infra/database/prisma/prisma.service';
 import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AuthModule } from './auth/auth.module';
       signOptions: { expiresIn: process.env.JWT_EXPIRES_IN },
     }),
     AuthModule,
+    UserModule,
   ],
   controllers: [],
   providers: [

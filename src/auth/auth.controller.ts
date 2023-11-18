@@ -1,19 +1,8 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  ValidationPipe,
-  UseGuards,
-} from '@nestjs/common';
-import { ApiTags, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { Controller, Post, Body, ValidationPipe } from '@nestjs/common';
+import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
-import { CreateAuthDto, UpdateAuthDto } from './dto/index';
-import { JwtGuard } from './guards/jwt.guard';
+import { CreateAuthDto, LoginAuthDto } from './dto/index';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -42,46 +31,25 @@ export class AuthController {
     }
   }
 
-  @ApiBearerAuth()
-  @UseGuards(JwtGuard)
   @ApiOkResponse({
-    description: 'Get all user',
+    description: 'Create new user.',
   })
-  @Get('users')
-  findAll() {
-    return this.authService.findAll();
-  }
+  @Post('login')
+  async login(@Body(ValidationPipe) data: LoginAuthDto) {
+    try {
+      const user = await this.authService.login(data);
 
-  @ApiBearerAuth()
-  @UseGuards(JwtGuard)
-  @ApiOkResponse({
-    description: 'Get user by id.',
-  })
-  @Get('user/:id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(id);
-  }
+      return {
+        status: 'success',
+        data: user,
+      };
+    } catch (error) {
+      console.error('Error in createUser:', error);
 
-  @ApiBearerAuth()
-  @UseGuards(JwtGuard)
-  @ApiOkResponse({
-    description: 'Update user by id.',
-  })
-  @Patch('user/:id')
-  update(
-    @Param('id') id: string,
-    @Body(ValidationPipe) updateAuthDto: UpdateAuthDto,
-  ) {
-    return this.authService.update(id, updateAuthDto);
-  }
-
-  @ApiBearerAuth()
-  @UseGuards(JwtGuard)
-  @ApiOkResponse({
-    description: 'Delete user by id.',
-  })
-  @Delete('user/:id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(id);
+      return {
+        status: 'failed',
+        message: 'Internal server error',
+      };
+    }
   }
 }
