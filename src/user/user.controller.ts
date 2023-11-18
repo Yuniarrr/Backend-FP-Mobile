@@ -46,7 +46,7 @@ export class UserController {
   @ApiOkResponse({
     description: 'Get user by id.',
   })
-  @Get()
+  @Get('me')
   async findOne(@GET_USER('id') user_id: string) {
     try {
       const user = await this.userService.findOne(user_id);

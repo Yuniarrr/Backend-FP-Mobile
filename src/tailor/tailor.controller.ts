@@ -40,6 +40,28 @@ export class TailorController {
   }
 
   @ApiOkResponse({
+    description: 'Get all tailors.',
+  })
+  @Get('all')
+  async findAllTailors() {
+    try {
+      const tailors = await this.tailorService.findAll();
+
+      return {
+        status: 'success',
+        data: tailors,
+      };
+    } catch (error) {
+      console.error('Error in findAllTailors:', error);
+
+      return {
+        status: 'failed',
+        message: 'Internal server error',
+      };
+    }
+  }
+
+  @ApiOkResponse({
     description: 'Get tailor by id.',
   })
   @Get('me')

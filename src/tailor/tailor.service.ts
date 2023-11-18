@@ -28,8 +28,10 @@ export class TailorService {
     return tailor;
   }
 
-  findAll() {
-    return `This action returns all tailor`;
+  async findAll() {
+    const tailors = await this.prisma.tailors.findMany();
+
+    return tailors;
   }
 
   async findOne(id: string) {
