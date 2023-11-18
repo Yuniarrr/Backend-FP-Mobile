@@ -2,109 +2,132 @@
 //// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 //// ------------------------------------------------------
 
-Table User {
+Table Users {
   id String [pk]
   username String [not null]
   full_name String
+  profile_picture String
   email String [unique, not null]
   password String [not null]
-  role Role [not null, default: 'FREELANCER']
+  role Role [not null, default: 'USER']
+  address String
   createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  Projects Projects [not null]
-  Jobs Jobs [not null]
+  updatedAt DateTime [default: `now()`, not null]
+  Tailors Tailors [not null]
+  Orders Orders [not null]
 }
 
-Table ContactMessages {
-  id Int [pk, increment]
-  first_name String [not null]
-  last_name String
-  email String [not null]
-  message String [not null]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  deletedAt DateTime
-}
-
-Table Projects {
-  id Int [pk, increment]
-  title String [not null]
+Table Tailors {
+  id String [pk]
+  name String [not null]
   description String
-  video String [not null]
   image String
-  link String
-  highlight Boolean [not null, default: false]
-  highlight_until DateTime
-  created_by String [not null]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  deletedAt DateTime
+  address String
+  longitude String
+  latitude String
+  opening_time String
+  closing_time String
+  open_days String
   user_id String [not null]
-  user User [not null]
-}
-
-Table JobTypes {
-  id Int [pk, increment]
-  type String [not null]
-  Jobs Jobs [not null]
-}
-
-Table Jobs {
-  id Int [pk, increment]
-  title String [not null]
-  description String [not null]
-  deadline DateTime [not null]
+  Users Users [not null]
   createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
+  updatedAt DateTime [default: `now()`, not null]
   deletedAt DateTime
-  user_id String [not null]
-  user User [not null]
-  type_id Int [not null]
-  type JobTypes [not null]
-  Applications Applications [not null]
+  Orders Orders [not null]
 }
 
-Table Applications {
+Table Orders {
+  id String [pk]
+  due_date DateTime
+  order_date DateTime [default: `now()`, not null]
+  delivery_address String
+  state StateOrder [not null, default: 'AWAITING']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  user_id String [not null]
+  Users Users [not null]
+  tailor_id String [not null]
+  Tailors Tailors [not null]
+  OrderItems OrderItems [not null]
+  Payment Payment [not null]
+}
+
+Table Clothes {
+  id String [pk]
+  name String [not null]
+  price Float
+  status ClotheStatus [not null, default: 'AWAITING']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  OrderItems OrderItems [not null]
+}
+
+Table OrderItems {
+  id Int [pk, increment]
+  order_id String [not null]
+  Orders Orders [not null]
+  cloth_id String [not null]
+  Clothes Clothes [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table Payment {
+  id String [pk]
+  price Float [not null]
+  status PaymentStatus [not null, default: 'AWAITING']
+  due_date DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  order_id String [not null]
+  Orders Orders [not null]
+  payment_method Int [not null]
+  PaymentMethods PaymentMethods [not null]
+}
+
+Table PaymentMethods {
   id Int [pk, increment]
   name String [not null]
-  email String [not null]
-  phone_number String [not null]
-  city String [not null]
-  cover_letter String [not null]
-  linkedin String [not null]
-  instagram String [not null]
-  type_creator TypeCreator [not null, default: 'Hobby']
-  AR_publications_count Int [not null, default: 0]
-  AR_monetize Boolean [not null, default: false]
-  AR_publication_platform String [not null]
-  AR_tools String [not null]
-  AR_type String [not null]
-  AR_asset Boolean [not null, default: false]
-  AR_3D_asset Int [not null, default: 0]
-  AR_Skills String [not null]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  deletedAt DateTime
-  jod_id Int [not null]
-  job Jobs [not null]
+  Payment Payment [not null]
 }
 
 Enum Role {
-  ADMIN
-  CLIENT
-  FREELANCER
+  TAILOR
+  USER
 }
 
-Enum TypeCreator {
-  Professional
-  SideHustle
-  Hobby
+Enum StateOrder {
+  AWAITING
+  MEASURING
+  SEWING
+  FITTING
+  DELIVER
+  CANCELLED
 }
 
-Ref: Projects.user_id > User.id
+Enum ClotheStatus {
+  AWAITING
+  ONGOING
+  DONE
+  CANCELLED
+}
 
-Ref: Jobs.user_id > User.id
+Enum PaymentStatus {
+  SUCCESS
+  AWAITING
+  FAILED
+}
 
-Ref: Jobs.type_id > JobTypes.id
+Ref: Tailors.user_id > Users.id
 
-Ref: Applications.jod_id > Jobs.id
+Ref: Orders.user_id > Users.id
+
+Ref: Orders.tailor_id > Tailors.id
+
+Ref: OrderItems.order_id > Orders.id
+
+Ref: OrderItems.cloth_id > Clothes.id
+
+Ref: Payment.order_id > Orders.id
+
+Ref: Payment.payment_method > PaymentMethods.id

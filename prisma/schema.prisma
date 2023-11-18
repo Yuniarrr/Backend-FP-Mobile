@@ -12,17 +12,127 @@ datasource db {
 }
 
 enum Role {
-  ADMIN
+  TAILOR
   USER
 }
 
-model User {
-  id        String   @id @default(uuid())
-  username  String
-  full_name String?
-  email     String   @unique
-  password  String
-  role      Role     @default(USER)
+enum StateOrder {
+  AWAITING
+  MEASURING
+  SEWING
+  FITTING
+  DELIVER
+  CANCELLED
+}
+
+enum ClotheStatus {
+  AWAITING
+  ONGOING
+  DONE
+  CANCELLED
+}
+
+enum PaymentStatus {
+  SUCCESS
+  AWAITING
+  FAILED
+}
+
+model Users {
+  id              String  @id @default(uuid())
+  username        String
+  full_name       String?
+  profile_picture String?
+  email           String  @unique
+  password        String
+  role            Role    @default(USER)
+  address         String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  Tailors   Tailors[]
+  Orders    Orders[]
+}
+
+model Tailors {
+  id           String  @id @default(uuid())
+  name         String
+  description  String? @db.Text
+  image        String?
+  address      String?
+  longitude    String?
+  latitude     String?
+  opening_time String?
+  closing_time String?
+  open_days    String?
+
+  user_id String
+  Users   Users  @relation(fields: [user_id], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  deletedAt DateTime?
+  Orders    Orders[]
+}
+
+model Orders {
+  id               String     @id @default(uuid())
+  due_date         DateTime?
+  order_date       DateTime   @default(now())
+  delivery_address String?
+  state            StateOrder @default(AWAITING)
+
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
+
+  user_id    String
+  Users      Users        @relation(fields: [user_id], references: [id])
+  tailor_id  String
+  Tailors    Tailors      @relation(fields: [tailor_id], references: [id])
+  OrderItems OrderItems[]
+  Payment    Payment[]
+}
+
+model Clothes {
+  id     String       @id @default(uuid())
+  name   String
+  price  Float?
+  status ClotheStatus @default(AWAITING)
+
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @default(now()) @updatedAt
+  OrderItems OrderItems[]
+}
+
+model OrderItems {
+  id Int @id @default(autoincrement())
+
+  order_id String
+  Orders   Orders  @relation(fields: [order_id], references: [id])
+  cloth_id String
+  Clothes  Clothes @relation(fields: [cloth_id], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Payment {
+  id       String        @id @default(uuid())
+  price    Float
+  status   PaymentStatus @default(AWAITING)
+  due_date DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  order_id       String
+  Orders         Orders         @relation(fields: [order_id], references: [id])
+  payment_method Int
+  PaymentMethods PaymentMethods @relation(fields: [payment_method], references: [id])
+}
+
+model PaymentMethods {
+  id      Int       @id @default(autoincrement())
+  name    String
+  Payment Payment[]
 }
