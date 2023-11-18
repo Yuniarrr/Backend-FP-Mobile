@@ -25,16 +25,44 @@ export class UserController {
     description: 'Get all user',
   })
   @Get('all')
-  findAll() {
-    return this.userService.findAll();
+  async findAll() {
+    try {
+      const user = await this.userService.findAll();
+
+      return {
+        status: 'success',
+        data: user,
+      };
+    } catch (error) {
+      console.error('Error in findAllUser:', error);
+
+      return {
+        status: 'failed',
+        message: 'Internal server error',
+      };
+    }
   }
 
   @ApiOkResponse({
     description: 'Get user by id.',
   })
   @Get()
-  findOne(@GET_USER('id') user_id: string) {
-    return this.userService.findOne(user_id);
+  async findOne(@GET_USER('id') user_id: string) {
+    try {
+      const user = await this.userService.findOne(user_id);
+
+      return {
+        status: 'success',
+        data: user,
+      };
+    } catch (error) {
+      console.error('Error in findOneUser:', error);
+
+      return {
+        status: 'failed',
+        message: 'Internal server error',
+      };
+    }
   }
 
   @ApiOkResponse({
@@ -45,7 +73,21 @@ export class UserController {
     @GET_USER('id') user_id: string,
     @Body(ValidationPipe) updateAuthDto: UpdateUserDto,
   ) {
-    return this.userService.update(user_id, updateAuthDto);
+    try {
+      const user = this.userService.update(user_id, updateAuthDto);
+
+      return {
+        status: 'success',
+        data: user,
+      };
+    } catch (error) {
+      console.error('Error in updateOneUser:', error);
+
+      return {
+        status: 'failed',
+        message: 'Internal server error',
+      };
+    }
   }
 
   @ApiOkResponse({
@@ -53,6 +95,20 @@ export class UserController {
   })
   @Delete()
   remove(@GET_USER('id') user_id: string) {
-    return this.userService.remove(user_id);
+    try {
+      const user = this.userService.remove(user_id);
+
+      return {
+        status: 'success',
+        data: user,
+      };
+    } catch (error) {
+      console.error('Error in removeOneUser:', error);
+
+      return {
+        status: 'failed',
+        message: 'Internal server error',
+      };
+    }
   }
 }
