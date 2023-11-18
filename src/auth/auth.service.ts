@@ -4,8 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 
 import { PrismaService } from '../infra/database/prisma/prisma.service';
-import { type CreateAuthDto } from './dto/create-auth.dto';
-import { type UpdateAuthDto } from './dto/update-auth.dto';
+import { type UpdateAuthDto, type CreateAuthDto } from './dto/index';
 
 const salt = bcrypt.genSaltSync(12);
 
