@@ -21,7 +21,7 @@
     "migrate:prod": "dotenv -e .env.production -- npx prisma migrate deploy --schema ./prisma/schema.prisma",
     "seed:dev": "dotenv -e .env.development -- npx ts-node -r tsconfig-paths/register ./prisma/seeder/seeder.ts",
     "seed:prod": "dotenv -e .env.production -- npx ts-node -r tsconfig-paths/register ./prisma/seeder/seeder.ts",
-    "setup:dev": "dotenv -e .env.development docker compose up -d",
+    "setup:dev": "dotenv -e .env.development -- docker compose up -d",
     "prepare": "husky install"
   },
   "lint-staged": {

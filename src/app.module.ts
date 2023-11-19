@@ -8,6 +8,8 @@ import { PrismaService } from './infra/database/prisma/prisma.service';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TailorModule } from './tailor/tailor.module';
+import { OrderModule } from './order/order.module';
+import { ClothModule } from './cloth/cloth.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { TailorModule } from './tailor/tailor.module';
     AuthModule,
     UserModule,
     TailorModule,
+    OrderModule,
+    ClothModule,
   ],
   controllers: [],
   providers: [
