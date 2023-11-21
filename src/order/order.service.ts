@@ -1,7 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
+import { type StateOrder } from '@prisma/client';
+
 import { PrismaService } from '../infra/database/prisma/prisma.service';
-import { type UpdateOrderDto, type CreateOrderDto } from './dto/index';
+import {
+  type UpdateOrderStatusDto,
+  type UpdateOrderDto,
+  type CreateOrderDto,
+} from './dto/index';
 
 @Injectable()
 export class OrderService {
@@ -30,6 +36,12 @@ export class OrderService {
   }
 
   async updateOrderUser(id: string, updateOrderDto: UpdateOrderDto) {
+    const isOrderExist = await this.findOrderbyId(id);
+
+    if (!isOrderExist) {
+      throw new NotFoundException('Order not found');
+    }
+
     const order = await this.prisma.orders.update({
       where: { id: id },
       data: {
@@ -40,16 +52,70 @@ export class OrderService {
     return order;
   }
 
-  findAll() {
-    return `This action returns all order`;
+  async updateOrderStatus(id: string, updateOrderStatus: UpdateOrderStatusDto) {
+    const isOrderExist = await this.findOrderbyId(id);
+
+    if (!isOrderExist) {
+      throw new NotFoundException('Order not found');
+    }
+
+    const order = await this.prisma.orders.update({
+      where: { id: id },
+      data: {
+        state: updateOrderStatus.state as StateOrder,
+      },
+    });
+
+    return order;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+  async findAll(user_id: string) {
+    const user = await this.findRoleByUserId(user_id);
+
+    if (user === 'USER') {
+      const orders = await this.prisma.orders.findMany({
+        where: { user_id: user_id },
+      });
+
+      return orders;
+    } else if (user === 'TAILOR') {
+      const orders = await this.prisma.orders.findMany({
+        where: { tailor_id: user_id },
+      });
+
+      return orders;
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+  async findClothByOrderId(order_id: string) {
+    const isOrderExist = await this.findOrderbyId(order_id);
+
+    if (!isOrderExist) {
+      throw new NotFoundException('Order not found');
+    }
+
+    const clothes = this.prisma.orderItems.findMany({
+      where: { order_id: order_id },
+      include: {
+        Clothes: true,
+      },
+    });
+
+    return clothes;
+  }
+
+  async findOrderDetailById(order_id: string) {
+    const isOrderExist = await this.findOrderbyId(order_id);
+
+    if (!isOrderExist) {
+      throw new NotFoundException('Order not found');
+    }
+
+    const order = await this.prisma.orders.findUnique({
+      where: { id: order_id },
+    });
+
+    return order;
   }
 
   async findTailorById(tailor_id: string) {
@@ -62,5 +128,25 @@ export class OrderService {
     }
 
     return true;
+  }
+
+  async findOrderbyId(id: string) {
+    const order = await this.prisma.orders.findUnique({
+      where: { id: id },
+    });
+
+    if (!order) {
+      return false;
+    }
+
+    return true;
+  }
+
+  async findRoleByUserId(id: string) {
+    const user = await this.prisma.users.findUnique({
+      where: { id: id },
+    });
+
+    return user.role;
   }
 }

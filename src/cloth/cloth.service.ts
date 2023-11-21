@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { type ClotheStatus } from '@prisma/client';
 
@@ -32,11 +32,17 @@ export class ClothService {
   }
 
   async updateClothTailor(
-    id: string,
+    cloth_id: string,
     updateClothTailorDto: UpdateClothTailorDto,
   ) {
+    const isClothExists = await this.findClothById(cloth_id);
+
+    if (!isClothExists) {
+      throw new NotFoundException('Cloth not found');
+    }
+
     const cloth = await this.prisma.clothes.update({
-      where: { id: id },
+      where: { id: cloth_id },
       data: {
         ...updateClothTailorDto,
         status: updateClothTailorDto.status as ClotheStatus,
@@ -46,9 +52,15 @@ export class ClothService {
     return cloth;
   }
 
-  async updateClothUser(id: string, updateClothUser: UpdateClothUserDto) {
+  async updateClothUser(cloth_id: string, updateClothUser: UpdateClothUserDto) {
+    const isClothExists = await this.findClothById(cloth_id);
+
+    if (!isClothExists) {
+      throw new NotFoundException('Cloth not found');
+    }
+
     const cloth = await this.prisma.clothes.update({
-      where: { id: id },
+      where: { id: cloth_id },
       data: {
         ...updateClothUser,
       },
@@ -57,15 +69,29 @@ export class ClothService {
     return cloth;
   }
 
-  findAll() {
-    return `This action returns all cloth`;
+  async findCloth(cloth_id: string) {
+    const isClothExists = await this.findClothById(cloth_id);
+
+    if (!isClothExists) {
+      throw new NotFoundException('Cloth not found');
+    }
+
+    const cloth = await this.prisma.clothes.findUnique({
+      where: { id: cloth_id },
+    });
+
+    return cloth;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} cloth`;
-  }
+  async findClothById(cloth_id: string) {
+    const cloth = await this.prisma.clothes.findUnique({
+      where: { id: cloth_id },
+    });
 
-  remove(id: number) {
-    return `This action removes a #${id} cloth`;
+    if (cloth) {
+      return true;
+    }
+
+    return false;
   }
 }
