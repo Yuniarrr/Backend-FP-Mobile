@@ -1,5 +1,21 @@
-import { PartialType } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
-import { CreateOrderDto } from './create-order.dto';
+import { IsDateString, IsOptional, IsString } from 'class-validator';
 
-export class UpdateOrderDto extends PartialType(CreateOrderDto) {}
+export class UpdateOrderDto {
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional({
+    description: 'Full name of the user.',
+    example: 'John Doe',
+  })
+  delivery_address?: string;
+
+  @IsDateString()
+  @IsOptional()
+  @ApiPropertyOptional({
+    description: 'Full name of the user.',
+    example: 'John Doe',
+  })
+  due_date?: string;
+}

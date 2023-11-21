@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
+import { Transform } from 'class-transformer';
 import {
   IsString,
   IsNotEmpty,
@@ -23,11 +24,13 @@ export class CreateClothDto {
   })
   description?: string;
 
-  @IsOptional()
+  @Transform(({ value }) => Number.parseInt(value))
+  @IsNotEmpty()
+  @IsDefined()
   @IsNumber()
-  @ApiPropertyOptional({
+  @ApiProperty({
     description: 'Quantity of the order.',
     example: '10',
   })
-  quantity?: number;
+  quantity: number;
 }

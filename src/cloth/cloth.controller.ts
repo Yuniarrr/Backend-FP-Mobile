@@ -3,17 +3,16 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-import { JwtGuard } from 'auth/guards/jwt.guard';
-
+import { JwtGuard } from '../auth/guards/jwt.guard';
 import { ClothService } from './cloth.service';
-import { CreateClothDto, UpdateClothDto } from './dto/index';
+import { CreateClothDto } from './dto/index';
 
 @ApiTags('Cloth')
 @Controller('cloth')
@@ -25,9 +24,24 @@ export class ClothController {
   @ApiOkResponse({
     description: 'Create new cloth.',
   })
-  @Post()
-  create(@Body() createClothDto: CreateClothDto) {
-    return this.clothService.create(createClothDto);
+  @Post(':order_id/items')
+  async create(
+    @Body(new ValidationPipe()) createClothDto: CreateClothDto,
+    @Param('order_id') order_id: string,
+  ) {
+    try {
+      const order = await this.clothService.createCloth(
+        createClothDto,
+        order_id,
+      );
+
+      return {
+        status: 'success',
+        data: order,
+      };
+    } catch (error) {
+      console.error('error in [POST] /order/:order_id/items', error);
+    }
   }
 
   @ApiOkResponse({
@@ -44,14 +58,6 @@ export class ClothController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.clothService.findOne(+id);
-  }
-
-  @ApiOkResponse({
-    description: 'Update cloth by id.',
-  })
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateClothDto: UpdateClothDto) {
-    return this.clothService.update(+id, updateClothDto);
   }
 
   @ApiOkResponse({
