@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
@@ -18,6 +22,12 @@ export class AuthService {
   ) {}
 
   async create(createAuthDto: CreateAuthDto) {
+    const isEmailExist = await this.checkEmail(createAuthDto.email);
+
+    if (isEmailExist) {
+      throw new ConflictException('Email already exist');
+    }
+
     const user = await this.prisma.users.create({
       data: {
         ...createAuthDto,
@@ -34,13 +44,13 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('Credentials not found');
     }
 
     const isPasswordMatch = await bcrypt.compare(data.password, user.password);
 
     if (!isPasswordMatch) {
-      throw new Error('Password not match');
+      throw new NotFoundException('Credentials not found');
     }
 
     const token = await this.generateToken(user.id, user.email, user.role);
@@ -67,5 +77,17 @@ export class AuthService {
     return {
       token,
     };
+  }
+
+  async checkEmail(email: string) {
+    const user = await this.prisma.users.findUnique({
+      where: { email },
+    });
+
+    if (user) {
+      return true;
+    }
+
+    return false;
   }
 }

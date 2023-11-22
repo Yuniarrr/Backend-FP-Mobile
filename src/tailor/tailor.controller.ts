@@ -17,7 +17,7 @@ export class TailorController {
   @ApiOkResponse({
     description: 'Create new tailor.',
   })
-  @Post()
+  @Post('create')
   async create(
     @Body() createTailorDto: CreateTailorDto,
     @GET_USER('id') user_id: string,

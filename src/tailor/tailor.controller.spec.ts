@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { type TestingModule, Test } from '@nestjs/testing';
+
 import { TailorController } from './tailor.controller';
 import { TailorService } from './tailor.service';
 
