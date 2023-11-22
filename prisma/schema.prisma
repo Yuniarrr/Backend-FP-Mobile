@@ -129,9 +129,9 @@ model Payment {
   updatedAt DateTime @default(now()) @updatedAt
 
   order_id       String
-  Orders         Orders         @relation(fields: [order_id], references: [id])
-  payment_method Int
-  PaymentMethods PaymentMethods @relation(fields: [payment_method], references: [id])
+  Orders         Orders          @relation(fields: [order_id], references: [id])
+  payment_method Int?
+  PaymentMethods PaymentMethods? @relation(fields: [payment_method], references: [id])
 }
 
 model PaymentMethods {

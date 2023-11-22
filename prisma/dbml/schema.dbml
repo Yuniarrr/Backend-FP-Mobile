@@ -84,8 +84,8 @@ Table Payment {
   updatedAt DateTime [default: `now()`, not null]
   order_id String [not null]
   Orders Orders [not null]
-  payment_method Int [not null]
-  PaymentMethods PaymentMethods [not null]
+  payment_method Int
+  PaymentMethods PaymentMethods
 }
 
 Table PaymentMethods {

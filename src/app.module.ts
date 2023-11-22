@@ -10,6 +10,7 @@ import { UserModule } from './user/user.module';
 import { TailorModule } from './tailor/tailor.module';
 import { OrderModule } from './order/order.module';
 import { ClothModule } from './cloth/cloth.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ClothModule } from './cloth/cloth.module';
     TailorModule,
     OrderModule,
     ClothModule,
+    PaymentModule,
   ],
   controllers: [],
   providers: [
