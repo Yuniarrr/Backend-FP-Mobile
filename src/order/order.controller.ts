@@ -17,8 +17,8 @@ import { Roles } from '../auth/decorators/Roles.decorator';
 import { JwtGuard, RolesGuard } from '../auth/guards/index';
 import { GET_USER } from '../user/decorator/get-user.decorator';
 import {
-  type UpdateOrderDto,
-  type CreateOrderDto,
+  UpdateOrderDto,
+  CreateOrderDto,
   UpdateOrderStatusDto,
 } from './dto/index';
 import { OrderService } from './order.service';

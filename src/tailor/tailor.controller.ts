@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  UseGuards,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { JwtGuard } from '../auth/guards/jwt.guard';
@@ -19,7 +27,7 @@ export class TailorController {
   })
   @Post('create')
   async create(
-    @Body() createTailorDto: CreateTailorDto,
+    @Body(new ValidationPipe()) createTailorDto: CreateTailorDto,
     @GET_USER('id') user_id: string,
   ) {
     try {

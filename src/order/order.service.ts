@@ -79,8 +79,10 @@ export class OrderService {
 
       return orders;
     } else if (user === 'TAILOR') {
+      const tailorId = await this.findTailorFromUserId(user_id);
+
       const orders = await this.prisma.orders.findMany({
-        where: { tailor_id: user_id },
+        where: { tailor_id: tailorId },
       });
 
       return orders;
@@ -148,5 +150,13 @@ export class OrderService {
     });
 
     return user.role;
+  }
+
+  async findTailorFromUserId(user_id: string) {
+    const tailor = await this.prisma.tailors.findUnique({
+      where: { user_id: user_id },
+    });
+
+    return tailor.id;
   }
 }
