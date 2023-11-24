@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { IsString, IsNotEmpty, IsDefined, IsDateString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsString, IsNotEmpty, IsDefined, IsDate } from 'class-validator';
 
 export class CreateOrderDto {
   @IsString()
@@ -9,7 +10,8 @@ export class CreateOrderDto {
   @ApiProperty({ description: 'For delivery address.', example: 'Surabaya' })
   delivery_address: string;
 
-  @IsDateString()
+  @Transform(({ value }) => new Date(value))
+  @IsDate()
   @IsNotEmpty()
   @IsDefined()
   @ApiProperty({ description: 'For due date.', example: '2023-01-01T00:00:00' })

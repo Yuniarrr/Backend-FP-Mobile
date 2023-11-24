@@ -11,34 +11,40 @@ const salt = bcrypt.genSaltSync(12);
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  findAll() {
-    const users = this.prisma.users.findMany();
+  async findAll() {
+    const users = await this.prisma.users.findMany();
 
     return users;
   }
 
-  findOne(id: string) {
-    const user = this.prisma.users.findUnique({
+  async findOne(id: string) {
+    const user = await this.prisma.users.findUnique({
       where: { id: id },
     });
 
     return user;
   }
 
-  update(id: string, updateAuthDto: UpdateUserDto) {
-    const user = this.prisma.users.update({
+  async update(id: string, updateAuthDto: UpdateUserDto) {
+    const { password, ...otherUpdateData } = updateAuthDto;
+
+    const userData = password
+      ? {
+          ...otherUpdateData,
+          password: bcrypt.hashSync(password, salt),
+        }
+      : { ...otherUpdateData };
+
+    const user = await this.prisma.users.update({
       where: { id: id },
-      data: {
-        ...updateAuthDto,
-        password: bcrypt.hashSync(updateAuthDto.password, salt),
-      },
+      data: userData,
     });
 
     return user;
   }
 
-  remove(id: string) {
-    const user = this.prisma.users.delete({
+  async remove(id: string) {
+    const user = await this.prisma.users.delete({
       where: { id: id },
     });
 

@@ -22,6 +22,7 @@
     "seed:dev": "dotenv -e .env.development -- npx ts-node -r tsconfig-paths/register ./prisma/seeder/seeder.ts",
     "seed:prod": "dotenv -e .env.production -- npx ts-node -r tsconfig-paths/register ./prisma/seeder/seeder.ts",
     "setup:dev": "dotenv -e .env.development -- docker compose up -d",
+    "studio": "dotenv -e .env.development -- npx prisma studio",
     "prepare": "husky install"
   },
   "lint-staged": {

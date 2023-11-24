@@ -1,10 +1,8 @@
-import { PartialType, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 import { IsString, IsOptional, IsArray } from 'class-validator';
 
-import { CreateTailorDto } from './create-tailor.dto';
-
-export class UpdateTailorDto extends PartialType(CreateTailorDto) {
+export class UpdateTailorDto {
   @IsString()
   @IsOptional()
   @ApiPropertyOptional({ description: 'Name for tailor', example: 'Penjahit' })

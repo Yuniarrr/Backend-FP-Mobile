@@ -14,10 +14,10 @@ export class OrderService {
   constructor(private readonly prisma: PrismaService) {}
   async createOrder(
     createOrderDto: CreateOrderDto,
-    tailor_id: string,
+    tailor_user_id: string,
     user_id: string,
   ) {
-    const isTailorExist = await this.findTailorById(tailor_id);
+    const isTailorExist = await this.findTailorFromUserId(tailor_user_id);
 
     if (!isTailorExist) {
       throw new NotFoundException('Tailor not found');
@@ -27,7 +27,7 @@ export class OrderService {
       data: {
         ...createOrderDto,
         order_date: new Date(),
-        tailor_id: tailor_id,
+        tailor_id: isTailorExist,
         user_id: user_id,
       },
     });

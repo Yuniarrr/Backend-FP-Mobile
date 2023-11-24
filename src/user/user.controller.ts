@@ -69,12 +69,12 @@ export class UserController {
     description: 'Update user by id.',
   })
   @Patch()
-  update(
+  async update(
     @GET_USER('id') user_id: string,
-    @Body(ValidationPipe) updateAuthDto: UpdateUserDto,
+    @Body(new ValidationPipe()) updateAuthDto: UpdateUserDto,
   ) {
     try {
-      const user = this.userService.update(user_id, updateAuthDto);
+      const user = await this.userService.update(user_id, updateAuthDto);
 
       return {
         status: 'success',
@@ -94,9 +94,9 @@ export class UserController {
     description: 'Delete user by id.',
   })
   @Delete()
-  remove(@GET_USER('id') user_id: string) {
+  async remove(@GET_USER('id') user_id: string) {
     try {
-      const user = this.userService.remove(user_id);
+      const user = await this.userService.remove(user_id);
 
       return {
         status: 'success',

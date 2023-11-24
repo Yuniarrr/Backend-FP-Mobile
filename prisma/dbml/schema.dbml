@@ -22,7 +22,7 @@ Table Tailors {
   id String [pk]
   name String [not null]
   description String
-  image String
+  rating Float
   address String
   longitude String
   latitude String
@@ -35,6 +35,7 @@ Table Tailors {
   updatedAt DateTime [default: `now()`, not null]
   deletedAt DateTime
   Orders Orders [not null]
+  TailorImage TailorImage [not null]
 }
 
 Table Orders {
@@ -94,6 +95,16 @@ Table PaymentMethods {
   Payment Payment [not null]
 }
 
+Table TailorImage {
+  id String [pk]
+  image_url String [not null]
+  tailor_id String [not null]
+  Tailors Tailors [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  deletedAt DateTime
+}
+
 Enum Role {
   TAILOR
   USER
@@ -134,3 +145,5 @@ Ref: OrderItems.cloth_id > Clothes.id
 Ref: Payment.order_id > Orders.id
 
 Ref: Payment.payment_method > PaymentMethods.id
+
+Ref: TailorImage.tailor_id > Tailors.id

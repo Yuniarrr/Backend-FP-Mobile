@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { tailor } from './tailor';
 
 const prisma = new PrismaClient();
 
@@ -9,7 +10,7 @@ async function seedUsers() {
   await prisma.users.createMany({
     data: [
       {
-        email: 'email@example.com',
+        email: 'user@example.com',
         password: bcrypt.hashSync('password', salt),
         username: 'John Doe',
         role: 'USER',
@@ -56,7 +57,7 @@ async function seedTailor() {
 async function seedOrder() {
   const user = await prisma.users.findUnique({
     where: {
-      email: 'email@example.com',
+      email: 'user@example.com',
     },
   });
 
@@ -66,6 +67,12 @@ async function seedOrder() {
     },
     include: {
       Tailors: true,
+    },
+  });
+
+  const payment_method = await prisma.paymentMethods.findFirst({
+    where: {
+      name: 'Cash',
     },
   });
 
@@ -80,9 +87,13 @@ async function seedOrder() {
           Payment: {
             create: {
               due_date: new Date(),
-              payment_method: 1,
               status: 'AWAITING',
               price: 1000,
+              PaymentMethods: {
+                connect: {
+                  id: payment_method.id,
+                },
+              },
             },
           },
         },
@@ -116,9 +127,19 @@ async function seedPaymentMethods() {
 }
 
 const main = async () => {
+  await prisma.orderItems.deleteMany();
+  await prisma.payment.deleteMany();
+  await prisma.orders.deleteMany();
+  await prisma.clothes.deleteMany();
+  await prisma.paymentMethods.deleteMany();
+  await prisma.tailorImage.deleteMany();
+  await prisma.tailors.deleteMany();
+  await prisma.users.deleteMany();
+
+  await seedPaymentMethods();
   await seedUsers();
   await seedTailor();
-  await seedPaymentMethods();
+  await tailor();
   await seedOrder();
 };
 

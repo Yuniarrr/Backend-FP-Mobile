@@ -33,17 +33,17 @@ export class OrderController {
   @ApiOkResponse({
     description: 'Create new order.',
   })
-  @Roles('USER')
-  @Post(':tailor_id/create')
+  @Roles('TAILOR')
+  @Post(':user_id/create')
   async createOrder(
     @Body(new ValidationPipe()) createOrderDto: CreateOrderDto,
-    @GET_USER('id') user_id: string,
-    @Param('tailor_id') tailor_id: string,
+    @GET_USER('id') tailor_user_id: string,
+    @Param('user_id') user_id: string,
   ) {
     try {
       const order = await this.orderService.createOrder(
         createOrderDto,
-        tailor_id,
+        tailor_user_id,
         user_id,
       );
 
@@ -74,7 +74,7 @@ export class OrderController {
   @ApiOkResponse({
     description: 'Update order by id from user.',
   })
-  @Roles('USER')
+  @Roles('TAILOR')
   @Patch(':order_id/update')
   async updateOrderUser(
     @Param('order_id') id: string,

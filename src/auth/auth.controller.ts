@@ -51,7 +51,7 @@ export class AuthController {
   }
 
   @ApiOkResponse({
-    description: 'Create new user.',
+    description: 'Login user.',
   })
   @Post('login')
   async login(@Body(ValidationPipe) data: LoginAuthDto) {
