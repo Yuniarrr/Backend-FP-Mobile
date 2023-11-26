@@ -16,11 +16,7 @@ import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../auth/decorators/Roles.decorator';
 import { JwtGuard, RolesGuard } from '../auth/guards/index';
 import { ClothService } from './cloth.service';
-import {
-  CreateClothDto,
-  UpdateClothTailorDto,
-  UpdateClothUserDto,
-} from './dto/index';
+import { CreateClothDto, UpdateClothUserDto } from './dto/index';
 
 @ApiTags('Cloth')
 @Controller('cloth')
@@ -29,7 +25,7 @@ import {
 export class ClothController {
   constructor(private readonly clothService: ClothService) {}
 
-  @Roles('USER')
+  @Roles('TAILOR')
   @ApiOkResponse({
     description: 'Create new cloth.',
   })
@@ -53,17 +49,17 @@ export class ClothController {
     }
   }
 
-  @Roles('USER')
+  @Roles('TAILOR')
   @ApiOkResponse({
     description: 'Update cloth by user.',
   })
   @Patch(':cloth_id/update')
-  async updateClothUser(
+  async updateCloth(
     @Body(new ValidationPipe()) updateClothDto: UpdateClothUserDto,
     @Param('cloth_id') cloth_id: string,
   ) {
     try {
-      const cloth = await this.clothService.updateClothUser(
+      const cloth = await this.clothService.updateCloth(
         cloth_id,
         updateClothDto,
       );
@@ -92,49 +88,11 @@ export class ClothController {
     }
   }
 
-  @Roles('TAILOR')
-  @ApiOkResponse({
-    description: 'Update cloth by tailor.',
-  })
-  @Patch(':cloth_id/status')
-  async updateStatus(
-    @Body(new ValidationPipe()) updateClothTailorDto: UpdateClothTailorDto,
-    @Param('cloth_id') cloth_id: string,
-  ) {
-    try {
-      const cloth = await this.clothService.updateClothTailor(
-        cloth_id,
-        updateClothTailorDto,
-      );
-
-      return {
-        status: 'success',
-        data: cloth,
-      };
-    } catch (error) {
-      console.error('error in [POST] /cloth/:cloth_id/status', error);
-
-      if (error instanceof NotFoundException) {
-        throw new HttpException(
-          {
-            status: 'failed',
-            message: error.message,
-          },
-          HttpStatus.NOT_FOUND,
-        );
-      }
-
-      return {
-        status: 'failed',
-        message: error,
-      };
-    }
-  }
-
+  @Roles('TAILOR', 'USER')
   @ApiOkResponse({
     description: 'Get cloth by id.',
   })
-  @Get(':cloth_id')
+  @Get(':cloth_id/find')
   async findCloth(@Param('cloth_id') cloth_id: string) {
     try {
       const cloth = await this.clothService.findCloth(cloth_id);

@@ -44,6 +44,7 @@ Table Orders {
   order_date DateTime [default: `now()`, not null]
   delivery_address String
   state StateOrder [not null, default: 'AWAITING']
+  status StatusOrder [not null, default: 'AWAITING']
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
   user_id String [not null]
@@ -64,6 +65,21 @@ Table Clothes {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
   OrderItems OrderItems [not null]
+  DetailClothes DetailClothes
+}
+
+Table DetailClothes {
+  id String [pk]
+  bust Float
+  waist Float
+  hips Float
+  length Float
+  sleeve_length Float
+  cloth_type ClothType [not null, default: 'TOP']
+  cloth_id String [unique, not null]
+  Clothes Clothes [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
 }
 
 Table OrderItems {
@@ -116,6 +132,12 @@ Enum StateOrder {
   SEWING
   FITTING
   DELIVER
+}
+
+Enum StatusOrder {
+  AWAITING
+  ONGOING
+  DONE
   CANCELLED
 }
 
@@ -132,11 +154,18 @@ Enum PaymentStatus {
   FAILED
 }
 
+Enum ClothType {
+  TOP
+  BOTTOM
+}
+
 Ref: Tailors.user_id > Users.id
 
 Ref: Orders.user_id > Users.id
 
 Ref: Orders.tailor_id > Tailors.id
+
+Ref: DetailClothes.cloth_id - Clothes.id
 
 Ref: OrderItems.order_id > Orders.id
 

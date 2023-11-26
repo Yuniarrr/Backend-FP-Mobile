@@ -52,7 +52,7 @@ export class ClothService {
     return cloth;
   }
 
-  async updateClothUser(cloth_id: string, updateClothUser: UpdateClothUserDto) {
+  async updateCloth(cloth_id: string, updateClothUser: UpdateClothUserDto) {
     const isClothExists = await this.findClothById(cloth_id);
 
     if (!isClothExists) {
@@ -63,6 +63,7 @@ export class ClothService {
       where: { id: cloth_id },
       data: {
         ...updateClothUser,
+        status: updateClothUser.status as ClotheStatus,
       },
     });
 

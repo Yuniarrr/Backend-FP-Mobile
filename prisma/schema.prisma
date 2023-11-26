@@ -22,6 +22,12 @@ enum StateOrder {
   SEWING
   FITTING
   DELIVER
+}
+
+enum StatusOrder {
+  AWAITING
+  ONGOING
+  DONE
   CANCELLED
 }
 
@@ -36,6 +42,11 @@ enum PaymentStatus {
   SUCCESS
   AWAITING
   FAILED
+}
+
+enum ClothType {
+  TOP
+  BOTTOM
 }
 
 model Users {
@@ -78,11 +89,12 @@ model Tailors {
 }
 
 model Orders {
-  id               String     @id @default(uuid())
+  id               String      @id @default(uuid())
   due_date         DateTime?
-  order_date       DateTime   @default(now())
+  order_date       DateTime    @default(now())
   delivery_address String?
-  state            StateOrder @default(AWAITING)
+  state            StateOrder  @default(AWAITING)
+  status           StatusOrder @default(AWAITING)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -103,9 +115,26 @@ model Clothes {
   description String?      @db.Text
   quantity    Int          @default(1)
 
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @default(now()) @updatedAt
-  OrderItems OrderItems[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now()) @updatedAt
+  OrderItems    OrderItems[]
+  DetailClothes DetailClothes?
+}
+
+model DetailClothes {
+  id            String    @id @default(uuid())
+  bust          Float?
+  waist         Float?
+  hips          Float?
+  length        Float?
+  sleeve_length Float?
+  cloth_type    ClothType @default(TOP)
+
+  cloth_id String  @unique
+  Clothes  Clothes @relation(fields: [cloth_id], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model OrderItems {

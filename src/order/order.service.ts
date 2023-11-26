@@ -1,68 +1,82 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { type StateOrder } from '@prisma/client';
+import { type StatusOrder, StateOrder } from '@prisma/client';
 
 import { PrismaService } from '../infra/database/prisma/prisma.service';
-import {
-  type UpdateOrderStatusDto,
-  type UpdateOrderDto,
-  type CreateOrderDto,
-} from './dto/index';
+import { type UpdateOrderDto, type CreateOrderDto } from './dto/index';
 
 @Injectable()
 export class OrderService {
   constructor(private readonly prisma: PrismaService) {}
-  async createOrder(
-    createOrderDto: CreateOrderDto,
-    tailor_user_id: string,
-    user_id: string,
-  ) {
+  async createOrder(createOrderDto: CreateOrderDto, tailor_user_id: string) {
     const isTailorExist = await this.findTailorFromUserId(tailor_user_id);
+    const userId = await this.findUserIdByEmail(createOrderDto.email);
 
     if (!isTailorExist) {
       throw new NotFoundException('Tailor not found');
     }
 
+    if (!userId) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (new Date(createOrderDto.due_date) < new Date()) {
+      throw new NotFoundException('Due date must be greater than today');
+    }
+
+    if (
+      !Object.values(StateOrder).includes(createOrderDto.state as StateOrder)
+    ) {
+      throw new NotFoundException('State not found');
+    }
+
     const order = await this.prisma.orders.create({
       data: {
-        ...createOrderDto,
         order_date: new Date(),
         tailor_id: isTailorExist,
-        user_id: user_id,
+        user_id: userId,
+        due_date: createOrderDto.due_date,
+        state: createOrderDto.state
+          ? (createOrderDto.state as StateOrder)
+          : 'AWAITING',
+        delivery_address: createOrderDto.delivery_address,
+        status: createOrderDto.status
+          ? (createOrderDto.status as StatusOrder)
+          : 'AWAITING',
       },
     });
 
     return order;
   }
 
-  async updateOrderUser(id: string, updateOrderDto: UpdateOrderDto) {
+  async updateOrder(id: string, updateOrderDto: UpdateOrderDto) {
     const isOrderExist = await this.findOrderbyId(id);
 
     if (!isOrderExist) {
       throw new NotFoundException('Order not found');
     }
 
-    const order = await this.prisma.orders.update({
-      where: { id: id },
-      data: {
-        ...updateOrderDto,
-      },
-    });
+    if (new Date(updateOrderDto.due_date) < new Date()) {
+      throw new NotFoundException('Due date must be greater than today');
+    }
 
-    return order;
-  }
-
-  async updateOrderStatus(id: string, updateOrderStatus: UpdateOrderStatusDto) {
-    const isOrderExist = await this.findOrderbyId(id);
-
-    if (!isOrderExist) {
-      throw new NotFoundException('Order not found');
+    if (
+      !Object.values(StateOrder).includes(updateOrderDto.state as StateOrder)
+    ) {
+      throw new NotFoundException('State not found');
     }
 
     const order = await this.prisma.orders.update({
       where: { id: id },
       data: {
-        state: updateOrderStatus.state as StateOrder,
+        delivery_address: updateOrderDto.delivery_address || undefined,
+        due_date: updateOrderDto.due_date || undefined,
+        state: updateOrderDto.state
+          ? (updateOrderDto.state as StateOrder)
+          : undefined,
+        status: updateOrderDto.status
+          ? (updateOrderDto.status as StatusOrder)
+          : undefined,
       },
     });
 
@@ -158,5 +172,13 @@ export class OrderService {
     });
 
     return tailor.id;
+  }
+
+  async findUserIdByEmail(email: string) {
+    const user = await this.prisma.users.findUnique({
+      where: { email: email },
+    });
+
+    return user.id;
   }
 }
