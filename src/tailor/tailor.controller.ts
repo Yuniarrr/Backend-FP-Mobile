@@ -6,8 +6,14 @@ import {
   Patch,
   UseGuards,
   ValidationPipe,
+  Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiTags,
+  ApiConsumes,
+} from '@nestjs/swagger';
 
 import { Roles } from '../auth/decorators/Roles.decorator';
 import { RolesGuard, JwtGuard } from '../auth/guards';
@@ -53,10 +59,17 @@ export class TailorController {
   @ApiOkResponse({
     description: 'Get all tailors.',
   })
+  @ApiConsumes('multipart/form-data')
   @Get('all')
-  async findAllTailors() {
+  async findAllTailors(
+    @Query('page') page: number | undefined,
+    @Query('orderBy') orderBy: string | undefined,
+  ) {
     try {
-      const tailors = await this.tailorService.findAll();
+      const tailors = await this.tailorService.findAll({
+        orderBy: orderBy ? { [orderBy]: 'desc' } : undefined,
+        page: page === undefined ? 10 : page,
+      });
 
       return {
         status: 'success',

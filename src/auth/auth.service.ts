@@ -62,7 +62,7 @@ export class AuthService {
     id: string,
     email: string,
     role: string,
-  ): Promise<{ token: string }> {
+  ): Promise<string> {
     const payload = {
       id,
       email,
@@ -74,9 +74,7 @@ export class AuthService {
       expiresIn: this.config.get('JWT_EXPIRES_IN'),
     });
 
-    return {
-      token,
-    };
+    return token;
   }
 
   async checkEmail(email: string) {
