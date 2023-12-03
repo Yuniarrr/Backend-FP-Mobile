@@ -61,14 +61,10 @@ export class TailorController {
   })
   @ApiConsumes('multipart/form-data')
   @Get('all')
-  async findAllTailors(
-    @Query('page') page: number | undefined,
-    @Query('orderBy') orderBy: string | undefined,
-  ) {
+  async findAllTailors(@Query('orderBy') orderBy: string | undefined) {
     try {
       const tailors = await this.tailorService.findAll({
         orderBy: orderBy ? { [orderBy]: 'desc' } : undefined,
-        page: page === undefined ? 10 : page,
       });
 
       return {

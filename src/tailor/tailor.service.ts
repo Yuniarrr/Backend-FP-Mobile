@@ -1,16 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { type Tailors, type Prisma } from '@prisma/client';
+import { type Prisma } from '@prisma/client';
 
 import { PrismaService } from '../infra/database/prisma/prisma.service';
-import {
-  type IPaginatedResult,
-  type PaginateFunctionProps,
-  paginator,
-} from '../utils/paginator';
+// import {
+//   type IPaginatedResult,
+//   type PaginateFunctionProps,
+//   paginator,
+// } from '../utils/paginator';
 import { type CreateTailorDto, type UpdateTailorDto } from './dto/index';
 
-const paginate: PaginateFunctionProps = paginator({ perPage: 10 });
+// const paginate: PaginateFunctionProps = paginator({ perPage: 10 });
 
 @Injectable()
 export class TailorService {
@@ -39,20 +39,25 @@ export class TailorService {
 
   async findAll({
     orderBy,
-    page,
   }: {
     orderBy?: Prisma.TailorsOrderByWithRelationInput;
-    page?: number;
-  }): Promise<IPaginatedResult<Tailors>> {
-    return paginate(
-      this.prisma.tailors,
-      {
-        orderBy,
+  }) {
+    return await this.prisma.tailors.findMany({
+      include: {
+        TailorImage: true,
       },
-      {
-        page,
-      },
-    );
+      orderBy,
+    });
+
+    // return paginate(
+    //   tailors,
+    //   {
+    //     orderBy,
+    //   },
+    //   {
+    //     page,
+    //   },
+    // );
   }
 
   async findOne(id: string) {
