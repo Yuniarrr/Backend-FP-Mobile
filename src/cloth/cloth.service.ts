@@ -4,6 +4,7 @@ import { type ClotheStatus } from '@prisma/client';
 
 import { PrismaService } from '../infra/database/prisma/prisma.service';
 import {
+  type DetailClothDto,
   type UpdateClothUserDto,
   type UpdateClothTailorDto,
   type CreateClothDto,
@@ -16,7 +17,9 @@ export class ClothService {
   async createCloth(createClothDto: CreateClothDto, order_id: string) {
     const cloth = await this.prisma.clothes.create({
       data: {
-        ...createClothDto,
+        name: createClothDto.name,
+        quantity: createClothDto.quantity,
+        price: createClothDto.price,
         status: 'AWAITING',
       },
     });
@@ -25,6 +28,23 @@ export class ClothService {
       data: {
         order_id: order_id,
         cloth_id: cloth.id,
+      },
+    });
+
+    return cloth;
+  }
+
+  async createDetailCloth(detailClothDto: DetailClothDto, cloth_id: string) {
+    const isClothExists = await this.findClothById(cloth_id);
+
+    if (!isClothExists) {
+      throw new NotFoundException('Cloth not found');
+    }
+
+    const cloth = await this.prisma.clothes.update({
+      where: { id: cloth_id },
+      data: {
+        ...detailClothDto,
       },
     });
 

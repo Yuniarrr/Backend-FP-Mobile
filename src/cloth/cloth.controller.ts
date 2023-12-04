@@ -16,7 +16,11 @@ import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../auth/decorators/Roles.decorator';
 import { JwtGuard, RolesGuard } from '../auth/guards/index';
 import { ClothService } from './cloth.service';
-import { CreateClothDto, UpdateClothUserDto } from './dto/index';
+import {
+  CreateClothDto,
+  DetailClothDto,
+  UpdateClothUserDto,
+} from './dto/index';
 
 @ApiTags('Cloth')
 @Controller('cloth')
@@ -46,6 +50,30 @@ export class ClothController {
       };
     } catch (error) {
       console.error('error in [POST] /order/:order_id/items', error);
+    }
+  }
+
+  @Roles('TAILOR')
+  @ApiOkResponse({
+    description: 'Create new cloth.',
+  })
+  @Post(':cloth_id/create/detail')
+  async createDetailCloth(
+    @Body(new ValidationPipe()) detailClothDto: DetailClothDto,
+    @Param('cloth_id') cloth_id: string,
+  ) {
+    try {
+      const order = await this.clothService.createDetailCloth(
+        detailClothDto,
+        cloth_id,
+      );
+
+      return {
+        status: 'success',
+        data: order,
+      };
+    } catch (error) {
+      console.error('error in [POST] /order/:cloth_id/create/detail', error);
     }
   }
 
