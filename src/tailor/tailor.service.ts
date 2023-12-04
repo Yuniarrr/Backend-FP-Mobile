@@ -102,6 +102,9 @@ export class TailorService {
   async findTailorByUserId(user_id: string) {
     const tailor = await this.prisma.tailors.findUnique({
       where: { user_id: user_id },
+      include: {
+        TailorImage: true,
+      },
     });
 
     return tailor;
