@@ -174,6 +174,13 @@ export class OrderService {
             cloth_id: true,
           },
         },
+        Users: {
+          select: {
+            username: true,
+            email: true,
+            address: true,
+          },
+        },
       },
     });
 
