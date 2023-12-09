@@ -50,6 +50,15 @@ export class DetailClothDto {
   })
   length?: number;
 
+  @Transform(({ value }) => Number.parseInt(value))
+  @IsOptional()
+  @IsNumber()
+  @ApiPropertyOptional({
+    description: 'Sizes of the clothes.',
+    example: '10',
+  })
+  inseam?: number;
+
   @IsOptional()
   @IsString()
   @IsEnum(ClothType)

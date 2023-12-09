@@ -110,10 +110,10 @@ model Clothes {
   description String?      @db.Text
   quantity    Int          @default(1)
 
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @default(now()) @updatedAt
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @default(now()) @updatedAt
   OrderItems    OrderItems[]
-  DetailClothes DetailClothes?
+  DetailClothes DetailClothes[]
 }
 
 model DetailClothes {
@@ -123,9 +123,10 @@ model DetailClothes {
   hips          Float?
   length        Float?
   sleeve_length Float?
+  inseam        Float?
   cloth_type    ClothType @default(TOP)
 
-  cloth_id String  @unique
+  cloth_id String
   Clothes  Clothes @relation(fields: [cloth_id], references: [id])
 
   createdAt DateTime @default(now())

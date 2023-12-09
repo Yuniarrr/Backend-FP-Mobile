@@ -64,7 +64,7 @@ Table Clothes {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
   OrderItems OrderItems [not null]
-  DetailClothes DetailClothes
+  DetailClothes DetailClothes [not null]
 }
 
 Table DetailClothes {
@@ -74,8 +74,9 @@ Table DetailClothes {
   hips Float
   length Float
   sleeve_length Float
+  inseam Float
   cloth_type ClothType [not null, default: 'TOP']
-  cloth_id String [unique, not null]
+  cloth_id String [not null]
   Clothes Clothes [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
@@ -160,7 +161,7 @@ Ref: Orders.user_id > Users.id
 
 Ref: Orders.tailor_id > Tailors.id
 
-Ref: DetailClothes.cloth_id - Clothes.id
+Ref: DetailClothes.cloth_id > Clothes.id
 
 Ref: OrderItems.order_id > Orders.id
 

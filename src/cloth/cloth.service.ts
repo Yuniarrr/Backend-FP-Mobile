@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { type ClotheStatus } from '@prisma/client';
+import { type ClothType, type ClotheStatus } from '@prisma/client';
 
 import { PrismaService } from '../infra/database/prisma/prisma.service';
 import {
@@ -41,10 +41,15 @@ export class ClothService {
       throw new NotFoundException('Cloth not found');
     }
 
-    const cloth = await this.prisma.clothes.update({
-      where: { id: cloth_id },
+    const cloth = await this.prisma.detailClothes.create({
       data: {
         ...detailClothDto,
+        cloth_type: detailClothDto.cloth_type as ClothType,
+        Clothes: {
+          connect: {
+            id: cloth_id,
+          },
+        },
       },
     });
 
@@ -99,6 +104,9 @@ export class ClothService {
 
     const cloth = await this.prisma.clothes.findUnique({
       where: { id: cloth_id },
+      include: {
+        DetailClothes: true,
+      },
     });
 
     return cloth;
