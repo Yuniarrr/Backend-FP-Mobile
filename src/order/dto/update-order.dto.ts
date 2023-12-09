@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
-import { StateOrder, StatusOrder } from '@prisma/client';
+import { StateOrder } from '@prisma/client';
 import { Transform } from 'class-transformer';
 import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
 
@@ -31,14 +31,4 @@ export class UpdateOrderDto {
     enum: StateOrder,
   })
   state?: string;
-
-  @Transform(({ value }) => value as StateOrder)
-  @IsOptional()
-  @IsString()
-  @IsEnum(StatusOrder)
-  @ApiPropertyOptional({
-    description: 'Status for clothe.',
-    enum: StatusOrder,
-  })
-  status?: string;
 }

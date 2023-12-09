@@ -22,13 +22,9 @@ enum StateOrder {
   SEWING
   FITTING
   DELIVER
-}
-
-enum StatusOrder {
-  AWAITING
-  ONGOING
-  DONE
+  PAYMENT
   CANCELLED
+  DONE
 }
 
 enum ClotheStatus {
@@ -89,12 +85,11 @@ model Tailors {
 }
 
 model Orders {
-  id               String      @id @default(uuid())
+  id               String     @id @default(uuid())
   due_date         DateTime?
-  order_date       DateTime    @default(now())
+  order_date       DateTime   @default(now())
   delivery_address String?
-  state            StateOrder  @default(AWAITING)
-  status           StatusOrder @default(AWAITING)
+  state            StateOrder @default(AWAITING)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt

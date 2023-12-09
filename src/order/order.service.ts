@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { type StatusOrder, StateOrder } from '@prisma/client';
+import { StateOrder } from '@prisma/client';
 
 import { PrismaService } from '../infra/database/prisma/prisma.service';
 import { type UpdateOrderDto, type CreateOrderDto } from './dto/index';
@@ -38,11 +38,8 @@ export class OrderService {
         due_date: createOrderDto.due_date,
         state: createOrderDto.state
           ? (createOrderDto.state as StateOrder)
-          : 'AWAITING',
+          : 'PAYMENT',
         delivery_address: createOrderDto.delivery_address,
-        status: createOrderDto.status
-          ? (createOrderDto.status as StatusOrder)
-          : 'AWAITING',
       },
     });
 
@@ -73,9 +70,6 @@ export class OrderService {
         due_date: updateOrderDto.due_date || undefined,
         state: updateOrderDto.state
           ? (updateOrderDto.state as StateOrder)
-          : undefined,
-        status: updateOrderDto.status
-          ? (updateOrderDto.status as StatusOrder)
           : undefined,
       },
     });
