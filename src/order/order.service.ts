@@ -83,6 +83,23 @@ export class OrderService {
     if (user === 'USER') {
       const orders = await this.prisma.orders.findMany({
         where: { user_id: user_id },
+        include: {
+          Users: {
+            select: {
+              username: true,
+              email: true,
+              address: true,
+            },
+          },
+          Tailors: {
+            select: {
+              address: true,
+              name: true,
+              longitude: true,
+              latitude: true,
+            },
+          },
+        },
       });
 
       return orders;
@@ -91,6 +108,23 @@ export class OrderService {
 
       const orders = await this.prisma.orders.findMany({
         where: { tailor_id: tailorId },
+        include: {
+          Users: {
+            select: {
+              username: true,
+              email: true,
+              address: true,
+            },
+          },
+          Tailors: {
+            select: {
+              address: true,
+              name: true,
+              longitude: true,
+              latitude: true,
+            },
+          },
+        },
       });
 
       return orders;
