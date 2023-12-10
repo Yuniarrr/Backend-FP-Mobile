@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { type Prisma } from '@prisma/client';
 
@@ -17,20 +21,21 @@ export class TailorService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createTailorDto: CreateTailorDto, user_id: string) {
-    const user = await this.findUserById(user_id);
+    const isUserExist = await this.findUserById(user_id);
+    const isTailorExist = await this.findTailorByUserId(user_id);
 
-    if (!user) {
+    if (!isUserExist) {
       throw new NotFoundException('User not found');
+    }
+
+    if (isTailorExist) {
+      throw new ConflictException('Tailor already exists');
     }
 
     const tailor = await this.prisma.tailors.create({
       data: {
         ...createTailorDto,
-        Users: {
-          connect: {
-            id: user_id,
-          },
-        },
+        user_id,
       },
     });
 

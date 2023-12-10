@@ -47,7 +47,7 @@ enum ClothType {
 
 model Users {
   id              String  @id @default(uuid())
-  username        String
+  username        String  @unique
   full_name       String?
   profile_picture String?
   phone_number    String?
@@ -56,10 +56,10 @@ model Users {
   role            Role    @default(USER)
   address         String?
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
-  Tailors   Tailors[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
   Orders    Orders[]
+  Tailors   Tailors?
 }
 
 model Tailors {
@@ -99,7 +99,7 @@ model Orders {
   tailor_id  String
   Tailors    Tailors      @relation(fields: [tailor_id], references: [id])
   OrderItems OrderItems[]
-  Payment    Payment[]
+  Payment    Payment?
 }
 
 model Clothes {
@@ -154,7 +154,7 @@ model Payment {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  order_id       String
+  order_id       String          @unique
   Orders         Orders          @relation(fields: [order_id], references: [id])
   payment_method Int?
   PaymentMethods PaymentMethods? @relation(fields: [payment_method], references: [id])

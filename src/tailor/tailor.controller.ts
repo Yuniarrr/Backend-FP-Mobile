@@ -7,6 +7,10 @@ import {
   UseGuards,
   ValidationPipe,
   Query,
+  NotFoundException,
+  HttpException,
+  HttpStatus,
+  ConflictException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -48,10 +52,25 @@ export class TailorController {
     } catch (error) {
       console.error('Error in createTailor:', error);
 
-      return {
-        status: 'failed',
-        message: 'Internal server error',
-      };
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      const error_ =
+        error instanceof NotFoundException || error instanceof ConflictException
+          ? new HttpException(
+              {
+                status: 'failed',
+                message: error.message,
+              },
+              error.getStatus(),
+            )
+          : new HttpException(
+              {
+                status: 'failed',
+                message: error,
+              },
+              HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+
+      throw error_;
     }
   }
 

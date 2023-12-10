@@ -4,7 +4,7 @@
 
 Table Users {
   id String [pk]
-  username String [not null]
+  username String [unique, not null]
   full_name String
   profile_picture String
   phone_number String
@@ -14,8 +14,8 @@ Table Users {
   address String
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
-  Tailors Tailors [not null]
   Orders Orders [not null]
+  Tailors Tailors
 }
 
 Table Tailors {
@@ -51,7 +51,7 @@ Table Orders {
   tailor_id String [not null]
   Tailors Tailors [not null]
   OrderItems OrderItems [not null]
-  Payment Payment [not null]
+  Payment Payment
 }
 
 Table Clothes {
@@ -99,7 +99,7 @@ Table Payment {
   due_date DateTime
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
-  order_id String [not null]
+  order_id String [unique, not null]
   Orders Orders [not null]
   payment_method Int
   PaymentMethods PaymentMethods
@@ -155,7 +155,7 @@ Enum ClothType {
   BOTTOM
 }
 
-Ref: Tailors.user_id > Users.id
+Ref: Tailors.user_id - Users.id
 
 Ref: Orders.user_id > Users.id
 
@@ -167,7 +167,7 @@ Ref: OrderItems.order_id > Orders.id
 
 Ref: OrderItems.cloth_id > Clothes.id
 
-Ref: Payment.order_id > Orders.id
+Ref: Payment.order_id - Orders.id
 
 Ref: Payment.payment_method > PaymentMethods.id
 

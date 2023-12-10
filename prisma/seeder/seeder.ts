@@ -70,6 +70,8 @@ async function seedOrder() {
     },
   });
 
+  const tailorId = tailor.Tailors.id;
+
   const payment_method = await prisma.paymentMethods.findFirst({
     where: {
       name: 'Cash',
@@ -82,7 +84,7 @@ async function seedOrder() {
         create: {
           order_date: new Date(),
           user_id: user.id,
-          tailor_id: tailor.Tailors[0].id,
+          tailor_id: tailorId,
           delivery_address: '1234 Tailor Street',
           Payment: {
             create: {
@@ -130,6 +132,7 @@ const main = async () => {
   await prisma.orderItems.deleteMany();
   await prisma.payment.deleteMany();
   await prisma.orders.deleteMany();
+  await prisma.detailClothes.deleteMany();
   await prisma.clothes.deleteMany();
   await prisma.paymentMethods.deleteMany();
   await prisma.tailorImage.deleteMany();
