@@ -16,7 +16,11 @@ import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../auth/decorators/Roles.decorator';
 import { JwtGuard, RolesGuard } from '../auth/guards/index';
 import { GET_USER } from '../user/decorator/get-user.decorator';
-import { UpdateOrderDto, CreateOrderDto } from './dto/index';
+import {
+  UpdateOrderDto,
+  CreateOrderDto,
+  UpdateOrderStatusDto,
+} from './dto/index';
 import { OrderService } from './order.service';
 
 @ApiTags('Order')
@@ -183,20 +187,66 @@ export class OrderController {
     } catch (error) {
       console.error('Error getting order detail by id', error);
 
-      if (error instanceof NotFoundException) {
-        throw new HttpException(
-          {
-            status: 'failed',
-            message: error.message,
-          },
-          HttpStatus.NOT_FOUND,
-        );
-      }
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      const error_ =
+        error instanceof NotFoundException
+          ? new HttpException(
+              {
+                status: 'failed',
+                message: error.message,
+              },
+              HttpStatus.NOT_FOUND,
+            )
+          : new HttpException(
+              {
+                status: 'failed',
+                message: error,
+              },
+              HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+
+      throw error_;
+    }
+  }
+
+  @Roles('TAILOR', 'USER')
+  @ApiOkResponse({
+    description: 'Update stutus of order',
+  })
+  @Patch(':order_id/status')
+  async updateStatusOrder(
+    @Param('order_id') order_id: string,
+    @Body(new ValidationPipe()) data: UpdateOrderStatusDto,
+  ) {
+    try {
+      const order = await this.orderService.updateStatusOrder(order_id, data);
 
       return {
-        status: 'error',
-        message: error,
+        status: 'success',
+        data: order,
       };
+    } catch (error) {
+      console.error('Error getting order detail by id', error);
+
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      const error_ =
+        error instanceof NotFoundException
+          ? new HttpException(
+              {
+                status: 'failed',
+                message: error.message,
+              },
+              HttpStatus.NOT_FOUND,
+            )
+          : new HttpException(
+              {
+                status: 'failed',
+                message: error,
+              },
+              HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+
+      throw error_;
     }
   }
 }

@@ -17,8 +17,8 @@ import { Roles } from '../auth/decorators/Roles.decorator';
 import { JwtGuard, RolesGuard } from '../auth/guards/index';
 import { ClothService } from './cloth.service';
 import {
+  type DetailClothDto,
   CreateClothDto,
-  DetailClothDto,
   UpdateClothUserDto,
 } from './dto/index';
 
@@ -53,13 +53,13 @@ export class ClothController {
     }
   }
 
-  @Roles('TAILOR')
+  @Roles('TAILOR', 'USER')
   @ApiOkResponse({
     description: 'Create new cloth.',
   })
   @Post(':cloth_id/create/detail')
   async createDetailCloth(
-    @Body(new ValidationPipe()) detailClothDto: DetailClothDto,
+    @Body(new ValidationPipe()) detailClothDto: DetailClothDto[],
     @Param('cloth_id') cloth_id: string,
   ) {
     try {
@@ -77,7 +77,7 @@ export class ClothController {
     }
   }
 
-  @Roles('TAILOR')
+  @Roles('TAILOR', 'USER')
   @ApiOkResponse({
     description: 'Update cloth by user.',
   })

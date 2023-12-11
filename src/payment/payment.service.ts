@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { type PaymentStatus } from '@prisma/client';
 
@@ -11,9 +15,14 @@ export class PaymentService {
 
   async createPayment(order_id: string) {
     const isOrderExist = await this.findOrderById(order_id);
+    const isPaymentExist = await this.findPaymentByOrderId(order_id);
 
     if (!isOrderExist) {
       throw new NotFoundException('Order not found');
+    }
+
+    if (isPaymentExist) {
+      throw new ConflictException('Payment already exists');
     }
 
     const price = await this.getPriceFromOrder(order_id);
@@ -45,7 +54,11 @@ export class PaymentService {
     return isPayment;
   }
 
-  async updatePaymentMethod(payment_id: string, payment_method_id: number) {
+  async updatePaymentMethod(
+    payment_id: string,
+    payment_method_id: number,
+    order_id: string,
+  ) {
     const isPaymentExist = await this.findPaymentById(payment_id);
 
     if (!isPaymentExist) {
@@ -58,6 +71,16 @@ export class PaymentService {
       },
       data: {
         payment_method: payment_method_id,
+        status: 'SUCCESS',
+      },
+    });
+
+    await this.prisma.orders.update({
+      where: {
+        id: order_id,
+      },
+      data: {
+        state: 'MEASURING',
       },
     });
 
@@ -127,6 +150,20 @@ export class PaymentService {
     const payment = await this.prisma.payment.findUnique({
       where: {
         id: payment_id,
+      },
+    });
+
+    if (payment) {
+      return true;
+    }
+
+    return false;
+  }
+
+  async findPaymentByOrderId(orderId: string) {
+    const payment = await this.prisma.payment.findFirst({
+      where: {
+        order_id: orderId,
       },
     });
 

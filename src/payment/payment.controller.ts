@@ -10,6 +10,7 @@ import {
   HttpStatus,
   Body,
   ValidationPipe,
+  ConflictException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
@@ -64,20 +65,25 @@ export class PaymentController {
     } catch (error) {
       console.error('error in createPayment', error);
 
-      if (error instanceof NotFoundException) {
-        throw new HttpException(
-          {
-            status: 'failed',
-            message: error.message,
-          },
-          HttpStatus.NOT_FOUND,
-        );
-      }
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      const error_ =
+        error instanceof NotFoundException || error instanceof ConflictException
+          ? new HttpException(
+              {
+                status: 'failed',
+                message: error.message,
+              },
+              error.getStatus(),
+            )
+          : new HttpException(
+              {
+                status: 'failed',
+                message: error,
+              },
+              HttpStatus.INTERNAL_SERVER_ERROR,
+            );
 
-      return {
-        status: 'failed',
-        message: error,
-      };
+      throw error_;
     }
   }
 
@@ -85,8 +91,9 @@ export class PaymentController {
   @ApiOkResponse({
     description: 'Update method payment by id.',
   })
-  @Patch(':payment_id/method/:payment_method_id')
+  @Patch(':payment_id/method/:payment_method_id/order/:order_id')
   async updatePaymentMethod(
+    @Param('order_id') order_id: string,
     @Param('payment_id') payment_id: string,
     @Param('payment_method_id') payment_method_id: number,
   ) {
@@ -94,6 +101,7 @@ export class PaymentController {
       const payment = await this.paymentService.updatePaymentMethod(
         payment_id,
         payment_method_id,
+        order_id,
       );
 
       return {

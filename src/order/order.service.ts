@@ -3,7 +3,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { StateOrder } from '@prisma/client';
 
 import { PrismaService } from '../infra/database/prisma/prisma.service';
-import { type UpdateOrderDto, type CreateOrderDto } from './dto/index';
+import {
+  type UpdateOrderStatusDto,
+  type UpdateOrderDto,
+  type CreateOrderDto,
+} from './dto/index';
 
 @Injectable()
 export class OrderService {
@@ -36,9 +40,7 @@ export class OrderService {
         tailor_id: isTailorExist,
         user_id: userId,
         due_date: createOrderDto.due_date,
-        state: createOrderDto.state
-          ? (createOrderDto.state as StateOrder)
-          : 'PAYMENT',
+        state: createOrderDto.state as StateOrder,
         delivery_address: createOrderDto.delivery_address,
       },
     });
@@ -181,6 +183,11 @@ export class OrderService {
             address: true,
           },
         },
+        Tailors: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 
@@ -233,5 +240,24 @@ export class OrderService {
     });
 
     return user.id;
+  }
+
+  async updateStatusOrder(order_id: string, data: UpdateOrderStatusDto) {
+    const isOrderExist = await this.findOrderbyId(order_id);
+
+    if (!isOrderExist) {
+      throw new NotFoundException('Order not found');
+    }
+
+    const order = await this.prisma.orders.update({
+      where: {
+        id: order_id,
+      },
+      data: {
+        state: data.state as StateOrder,
+      },
+    });
+
+    return order;
   }
 }

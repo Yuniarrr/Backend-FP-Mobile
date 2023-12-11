@@ -1,8 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
-import { ClothType } from '@prisma/client';
 import { Transform } from 'class-transformer';
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional } from 'class-validator';
 
 export class DetailClothDto {
   @Transform(({ value }) => Number.parseInt(value))
@@ -12,7 +11,7 @@ export class DetailClothDto {
     description: 'Sizes of the clothes.',
     example: '10',
   })
-  bust?: number;
+  bust_top?: number;
 
   @Transform(({ value }) => Number.parseInt(value))
   @IsOptional()
@@ -21,7 +20,7 @@ export class DetailClothDto {
     description: 'Sizes of the clothes.',
     example: '10',
   })
-  waist?: number;
+  waist_top?: number;
 
   @Transform(({ value }) => Number.parseInt(value))
   @IsOptional()
@@ -30,7 +29,7 @@ export class DetailClothDto {
     description: 'Sizes of the clothes.',
     example: '10',
   })
-  hips?: number;
+  hips_top?: number;
 
   @Transform(({ value }) => Number.parseInt(value))
   @IsOptional()
@@ -39,7 +38,7 @@ export class DetailClothDto {
     description: 'Sizes of the clothes.',
     example: '10',
   })
-  sleeve_length?: number;
+  sleeve_length_top?: number;
 
   @Transform(({ value }) => Number.parseInt(value))
   @IsOptional()
@@ -48,7 +47,7 @@ export class DetailClothDto {
     description: 'Sizes of the clothes.',
     example: '10',
   })
-  length?: number;
+  length_top?: number;
 
   @Transform(({ value }) => Number.parseInt(value))
   @IsOptional()
@@ -57,14 +56,32 @@ export class DetailClothDto {
     description: 'Sizes of the clothes.',
     example: '10',
   })
-  inseam?: number;
+  inseam_bottom?: number;
 
+  @Transform(({ value }) => Number.parseInt(value))
   @IsOptional()
-  @IsString()
-  @IsEnum(ClothType)
+  @IsNumber()
   @ApiPropertyOptional({
-    description: 'Status for clothe.',
-    enum: ClothType,
+    description: 'Sizes of the clothes.',
+    example: '10',
   })
-  cloth_type?: string;
+  waist_bottom?: number;
+
+  @Transform(({ value }) => Number.parseInt(value))
+  @IsOptional()
+  @IsNumber()
+  @ApiPropertyOptional({
+    description: 'Sizes of the clothes.',
+    example: '10',
+  })
+  hips_bottom?: number;
+
+  @Transform(({ value }) => Number.parseInt(value))
+  @IsOptional()
+  @IsNumber()
+  @ApiPropertyOptional({
+    description: 'Sizes of the clothes.',
+    example: '10',
+  })
+  length_bottom?: number;
 }

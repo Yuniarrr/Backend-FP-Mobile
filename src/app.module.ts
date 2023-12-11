@@ -11,6 +11,7 @@ import { TailorModule } from './tailor/tailor.module';
 import { OrderModule } from './order/order.module';
 import { ClothModule } from './cloth/cloth.module';
 import { PaymentModule } from './payment/payment.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { PaymentModule } from './payment/payment.module';
     OrderModule,
     ClothModule,
     PaymentModule,
+    ChatModule,
   ],
   controllers: [],
   providers: [

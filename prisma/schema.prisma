@@ -40,11 +40,6 @@ enum PaymentStatus {
   FAILED
 }
 
-enum ClothType {
-  TOP
-  BOTTOM
-}
-
 model Users {
   id              String  @id @default(uuid())
   username        String  @unique
@@ -117,14 +112,16 @@ model Clothes {
 }
 
 model DetailClothes {
-  id            String    @id @default(uuid())
-  bust          Float?
-  waist         Float?
-  hips          Float?
-  length        Float?
-  sleeve_length Float?
-  inseam        Float?
-  cloth_type    ClothType @default(TOP)
+  id                String @id @default(uuid())
+  bust_top          Float?
+  waist_top         Float?
+  hips_top          Float?
+  length_top        Float?
+  sleeve_length_top Float?
+  inseam_bottom     Float?
+  waist_bottom      Float?
+  hips_bottom       Float?
+  length_bottom     Float?
 
   cloth_id String
   Clothes  Clothes @relation(fields: [cloth_id], references: [id])

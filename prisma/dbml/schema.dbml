@@ -69,13 +69,15 @@ Table Clothes {
 
 Table DetailClothes {
   id String [pk]
-  bust Float
-  waist Float
-  hips Float
-  length Float
-  sleeve_length Float
-  inseam Float
-  cloth_type ClothType [not null, default: 'TOP']
+  bust_top Float
+  waist_top Float
+  hips_top Float
+  length_top Float
+  sleeve_length_top Float
+  inseam_bottom Float
+  waist_bottom Float
+  hips_bottom Float
+  length_bottom Float
   cloth_id String [not null]
   Clothes Clothes [not null]
   createdAt DateTime [default: `now()`, not null]
@@ -148,11 +150,6 @@ Enum PaymentStatus {
   SUCCESS
   AWAITING
   FAILED
-}
-
-Enum ClothType {
-  TOP
-  BOTTOM
 }
 
 Ref: Tailors.user_id - Users.id
